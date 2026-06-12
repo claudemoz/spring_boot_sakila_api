@@ -2,6 +2,7 @@ package com.sakila.rest.services;
 
 import com.sakila.rest.entities.Film;
 import com.sakila.rest.repositories.FilmRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,13 +41,28 @@ public class FilmServiceImpl implements FilmService {
         return null;
     }
 
+
     @Override
-    public List<Film> searchFilmByTitle(String name) {
-        return null;
+    @Transactional
+    public List<Film> findAllFilms() {
+        return filmRepository.findAll();
     }
 
     @Override
-    public List<Film> searchFilmByActor(String name) {
-        return null;
+    @Transactional
+    public List<Film> searchFilmsByTitle(String searchTerm) {
+        return filmRepository.findByTitleContaining(searchTerm);
+    }
+
+    @Override
+    @Transactional()
+    public Film getFilmWithActors(Integer filmId) {
+        return filmRepository.findFilmWithActors(filmId);
+    }
+
+    @Override
+    @Transactional()
+    public List<Film> findFilmsByActorId(Integer actorId) {
+        return filmRepository.findFilmsByActorId(actorId);
     }
 }

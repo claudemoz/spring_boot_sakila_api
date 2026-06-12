@@ -1,13 +1,13 @@
 package com.sakila.rest.controllers;
 
+import com.sakila.rest.entities.Actor;
 import com.sakila.rest.entities.Film;
 import com.sakila.rest.services.FilmService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/film")
@@ -17,13 +17,26 @@ public class FilmControllers {
         this.service = service;
     }
 
-    @GetMapping("get")
-    public List<Film> getFilmByTitle(@RequestParam String name){
-        return service.searchFilmByTitle(name);
+    @GetMapping("/all")
+    public List<Film> getAllFilms() {
+        return service.findAllFilms();
+    }
+    @GetMapping("/search")
+    public List<Film> searchFilms(@RequestParam String title) {
+        return service.searchFilmsByTitle(title);
     }
 
-    @GetMapping("get")
-    public List<Film> getFilmByActor(@RequestParam String name){
-        return service.searchFilmByActor(name);
+    @GetMapping("/{id}/actors")
+    public ResponseEntity<Set<Actor>> getActorsByFilm(@PathVariable Integer id) {
+        Film film = service.getFilmWithActors(id);
+        if (film == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(film.getActors());
+    }
+
+    @GetMapping("/actor/{actorId}")
+    public List<Film> getFilmsByActor(@PathVariable Integer actorId) {
+        return service.findFilmsByActorId(actorId);
     }
 }
